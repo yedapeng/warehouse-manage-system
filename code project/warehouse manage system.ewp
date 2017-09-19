@@ -21,7 +21,7 @@
                 <option>
                     <name>GenCodeModel</name>
                     <version>0</version>
-                    <state>0</state>
+                    <state>1</state>
                 </option>
                 <option>
                     <name>GenDataModel</name>
@@ -60,7 +60,7 @@
                 </option>
                 <option>
                     <name>GenRTConfigPath</name>
-                    <state>$TOOLKIT_DIR$\LIB\dlstm8smn.h</state>
+                    <state>$TOOLKIT_DIR$\LIB\dlstm8mmn.h</state>
                 </option>
                 <option>
                     <name>GenLibInFormatter</name>
@@ -258,6 +258,7 @@
                     <name>CCIncludePath2</name>
                     <state>$PROJ_DIR$\STM8S_StdPeriph_Driver\inc</state>
                     <state>$PROJ_DIR$</state>
+                    <state>$PROJ_DIR$\user</state>
                 </option>
                 <option>
                     <name>CCStdIncCheck</name>
@@ -818,7 +819,7 @@
                 <debug>0</debug>
                 <option>
                     <name>GenDeviceSelectMenu</name>
-                    <state></state>
+                    <state>UnspecifiedSTM8	STM8 - Unspecified</state>
                 </option>
                 <option>
                     <name>GenCodeModel</name>
@@ -862,7 +863,7 @@
                 </option>
                 <option>
                     <name>GenRTConfigPath</name>
-                    <state></state>
+                    <state>$TOOLKIT_DIR$\LIB\dlstm8smn.h</state>
                 </option>
                 <option>
                     <name>GenLibInFormatter</name>
@@ -957,12 +958,12 @@
                 </option>
                 <option>
                     <name>IccOptLevelSlave</name>
-                    <state>1</state>
+                    <state>3</state>
                 </option>
                 <option>
                     <name>IccOptAllowList</name>
                     <version>0</version>
-                    <state>111110</state>
+                    <state>111111</state>
                 </option>
                 <option>
                     <name>IccGenerateDebugInfo</name>
@@ -970,7 +971,7 @@
                 </option>
                 <option>
                     <name>IccOutputFile</name>
-                    <state></state>
+                    <state>$FILE_BNAME$.o</state>
                 </option>
                 <option>
                     <name>IccCodeModel</name>
@@ -1344,7 +1345,7 @@
                 </option>
                 <option>
                     <name>IlinkOutputFile</name>
-                    <state>###Unitialized###</state>
+                    <state>warehouse manage system.out</state>
                 </option>
                 <option>
                     <name>IlinkDebugInfoEnable</name>
@@ -1607,11 +1608,62 @@
     <group>
         <name>StdPeriph_Drivers</name>
         <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_adc1.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_awu.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_beep.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_clk.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_exti.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_flash.c</name>
+        </file>
+        <file>
             <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_gpio.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_i2c.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_itc.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_iwdg.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_rst.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_spi.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_tim1.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_tim2.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_tim4.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_uart1.c</name>
+        </file>
+        <file>
+            <name>$PROJ_DIR$\STM8S_StdPeriph_Driver\src\stm8s_wwdg.c</name>
         </file>
     </group>
     <group>
         <name>User</name>
+        <file>
+            <name>$PROJ_DIR$\user\dis.c</name>
+        </file>
         <file>
             <name>$PROJ_DIR$\main.c</name>
         </file>

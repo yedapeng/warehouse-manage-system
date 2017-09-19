@@ -5,4 +5,5 @@ code project/settings/warehouse manage system.Debug.cspy.ps1
 code project/settings/warehouse manage system.Debug.general.xcl
 code project/settings/warehouse manage system.Debug.cspy.bat
 code project/Release/Obj/
+code project/Release/
 code project/settings/
