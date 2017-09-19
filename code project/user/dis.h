@@ -4,6 +4,9 @@
 
 
 
+#define RX_BUFFER_SIZE          32  
+
+
 #define SCLK_GPIO_Port          GPIOC
 #define SCLK_Pin                GPIO_PIN_6      
 #define RCLK_GPIO_Port          GPIOC   
@@ -24,9 +27,39 @@
 
 
 extern void LED4_Display (void);
+extern uint8_t key_read (void);
+
+#define KEY_VALUE_KEY1                  0x01
+#define KEY_VALUE_KEY2                  0x02
+#define KEY_VALUE_KEY3                  0x04
+#define KEY_VALUE_LONGPRESS             0x80
+
+#define NORM_MODE                       0
+#define SET_MODE                        1
 
 
+extern uint8_t own_addr;
 
+extern void display_dis(uint8_t key);
+
+
+#define COM_DATA_HEAD                   0xA55A
+#define COM_DATA_LEN                    8
+
+typedef struct 
+{
+  uint8_t  len;
+  uint8_t  data[COM_DATA_LEN];
+}body_t;
+
+typedef struct 
+{
+  uint16_t head;
+  uint8_t slave_addr;
+  uint8_t point_addr;
+  body_t  body;
+  uint8_t  check_sum;
+}com_data_t;
 
 
 

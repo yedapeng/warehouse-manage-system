@@ -38,6 +38,27 @@
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 #define TIM4_PERIOD       255
+#define UART_BPS          9600    
+    
+    
+#define TX_BUFFER_SIZE          32
+__IO uint8_t TxBuffer[TX_BUFFER_SIZE];
+__IO uint8_t TxCounter = 0;
+
+ 
+__IO uint8_t RxBuffer[RX_BUFFER_SIZE];
+__IO uint8_t RxCounter = 0;
+__IO uint8_t rx_over_count = 0;
+__IO uint8_t rx_flag = 0;
+
+typedef struct
+{
+  uint8_t rx_len;
+  __IO uint8_t *rx_index;
+}rx_t;
+    
+rx_t uart_rx;
+    
 /* Private macro -------------------------------------------------------------*/
 /* Private variables ---------------------------------------------------------*/
 __IO uint32_t TimingDelay = 0;
@@ -47,6 +68,60 @@ void TimingDelay_Decrement(void);
 static void CLK_Config(void);
 static void TIM4_Config(void);
 static void GPIO_Config(void);
+static void UART1_Config(void);
+
+
+
+
+void uart_send()
+{
+  TxBuffer[0] = '0';
+  TxBuffer[1] = '1';
+  TxBuffer[2] = '2';
+  TxBuffer[3] = '3';
+  TxCounter = 4;
+  UART1_ITConfig(UART1_IT_TXE, ENABLE);
+}
+
+/* 处理串口接收到的数据 */
+void dis_uart_data(rx_t *rx_data)
+{
+  
+}
+
+
+
+
+void rs485_tx(void)
+{ 
+  GPIO_WriteHigh(GPIOA, GPIO_PIN_1);
+  GPIO_WriteHigh(GPIOA, GPIO_PIN_2);
+}
+
+void rs485_rx(void)
+{ 
+  GPIO_WriteLow(GPIOA, GPIO_PIN_1);
+  GPIO_WriteLow(GPIOA, GPIO_PIN_2);
+}
+
+#define         ADDR_ADDR               0x4000
+
+void inf_write(uint8_t addr)
+{
+    /* Define FLASH programming time */
+    FLASH_SetProgrammingTime(FLASH_PROGRAMTIME_STANDARD);
+
+    /* Unlock Data memory */
+    FLASH_Unlock(FLASH_MEMTYPE_DATA);
+    FLASH_ProgramByte(ADDR_ADDR, addr);
+}
+
+uint8_t inf_read(void)
+{
+  return FLASH_ReadByte(ADDR_ADDR);
+}
+
+
 /* Private functions ---------------------------------------------------------*/
 /* Public functions ----------------------------------------------------------*/
 /**
@@ -56,6 +131,7 @@ static void GPIO_Config(void);
   */
 void main(void)
 {
+
   
   /* Clock configuration -----------------------------------------*/
   CLK_Config();  
@@ -64,26 +140,30 @@ void main(void)
   GPIO_Config();  
 
   /* TIM4 configuration -----------------------------------------*/
-  TIM4_Config();    
+  TIM4_Config();  
+  
+  own_addr = inf_read();
+
+  UART1_Config();  
   
   while (1)
   {
-    /* Toggle LED2 and LED4 */
-//    STM_EVAL_LEDToggle(LED2);
-//    STM_EVAL_LEDToggle(LED4);
-
-    /* Insert 50 ms delay */
-    //Delay(2);
-    //LED4_Display();
-
-    /* Toggle LED1 and LED3 */
-//    STM_EVAL_LEDToggle(LED1);
-//    STM_EVAL_LEDToggle(LED3);
-
-    /* Insert 100 ms delay */
-    //Delay(100);
+    
+    
+    if (rx_flag)
+    {
+      rx_flag = 0;
+      dis_uart_data(&uart_rx);
+      
+      
+      
+      
+    }
   }
 }
+
+
+
 
 /**
   * @brief  Configure system clock to run at 16Mhz
@@ -96,6 +176,42 @@ static void CLK_Config(void)
     /* Clock divider to HSI/1 */
     CLK_HSIPrescalerConfig(CLK_PRESCALER_HSIDIV1);
 }
+
+
+/**
+  * @brief  Configure UART1 for the communication with HyperTerminal
+  * @param  None
+  * @retval None
+  */
+static void UART1_Config(void)
+{
+  /* EVAL COM (UART) configuration -----------------------------------------*/
+  /* USART configured as follow:
+        - BaudRate = 9600 baud  
+        - Word Length = 8 Bits
+        - One Stop Bit
+        - Odd parity
+        - Receive and transmit enabled
+        - UART Clock disabled
+  */
+  UART1_Init((uint32_t)UART_BPS, UART1_WORDLENGTH_8D,UART1_STOPBITS_1, UART1_PARITY_NO,
+                   UART1_SYNCMODE_CLOCK_DISABLE, UART1_MODE_TXRX_ENABLE);
+
+  /* Enable the UART Receive interrupt: this interrupt is generated when the UART
+    receive data register is not empty */
+  UART1_ITConfig(UART1_IT_RXNE_OR, ENABLE);
+  
+  /* Enable the UART Transmit complete interrupt: this interrupt is generated 
+     when the UART transmit Shift Register is empty */
+  UART1_ITConfig(UART1_IT_TXE, ENABLE);
+
+  /* Enable UART */
+  UART1_Cmd(ENABLE);
+  
+    /* Enable general interrupts */
+  enableInterrupts();
+}
+
 
 /**
   * @brief  Configure TIM4 to generate an update interrupt each 1ms 
@@ -121,7 +237,7 @@ static void TIM4_Config(void)
   TIM4_ITConfig(TIM4_IT_UPDATE, ENABLE);
   
   /* enable interrupts */
-  enableInterrupts();
+  //enableInterrupts();
 
   /* Enable TIM4 */
   TIM4_Cmd(ENABLE);
@@ -134,24 +250,20 @@ static void TIM4_Config(void)
   */
 static void GPIO_Config(void)
 {
-    /* Initialize LEDs mounted on STM8-128 EVAL board */
+  /* Initialize LEDs mounted on STM8-128 EVAL board */
   GPIO_Init(SCLK_GPIO_Port, SCLK_Pin, GPIO_MODE_OUT_PP_HIGH_FAST);
   GPIO_Init(RCLK_GPIO_Port, RCLK_Pin, GPIO_MODE_OUT_PP_HIGH_FAST);
   GPIO_Init(DAT_GPIO_Port, DAT_Pin, GPIO_MODE_OUT_PP_HIGH_FAST);
   
-//    STM_EVAL_LEDInit(LED1);
-//    STM_EVAL_LEDInit(LED2);
-//    STM_EVAL_LEDInit(LED3);
-//    STM_EVAL_LEDInit(LED4);
-    
-    /* Switch LED2 & LED4 Off */
-//    STM_EVAL_LEDOff(LED2);
-//    STM_EVAL_LEDOff(LED4);
-//    
-//    /* Switch LED1 & LED3 On */
-//    STM_EVAL_LEDOn(LED1);
-//    STM_EVAL_LEDOn(LED3);
-    
+  GPIO_Init(GPIOA, GPIO_PIN_1, GPIO_MODE_OUT_PP_HIGH_FAST);
+  
+  GPIO_Init(GPIOA, GPIO_PIN_2, GPIO_MODE_OUT_PP_HIGH_FAST);
+  
+  GPIO_Init(GPIOC, GPIO_PIN_3, GPIO_MODE_IN_PU_NO_IT);
+  GPIO_Init(GPIOC, GPIO_PIN_4, GPIO_MODE_IN_PU_NO_IT);
+  GPIO_Init(GPIOC, GPIO_PIN_5, GPIO_MODE_IN_PU_NO_IT);
+
+  rs485_rx();
 }
 
 /**
@@ -187,7 +299,26 @@ void TimingDelay_Decrement(void)
  */
 void timer_handle(void)
 {
+  uint8_t key;
   LED4_Display();
+  TimingDelay_Decrement();
+  
+  key = key_read();
+  
+  display_dis(key);
+  if (RxCounter)
+  {
+    rx_over_count ++;
+    if (rx_over_count > 5)
+    {
+      rx_flag = 1;
+      rx_over_count = 0;
+      
+      uart_rx.rx_index = RxBuffer;
+      uart_rx.rx_len = RxCounter;
+      RxCounter = 0;
+    }
+  }
 }
 
 

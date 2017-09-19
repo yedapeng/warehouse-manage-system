@@ -27,7 +27,9 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "stm8s_it.h"
-
+#include "stm8s.h"
+#include "dis.h"
+    
 /* Private typedef -----------------------------------------------------------*/
 /* Private define ------------------------------------------------------------*/
 /* Private macro -------------------------------------------------------------*/
@@ -38,6 +40,19 @@ extern void timer_handle(void);
 /* Private functions ---------------------------------------------------------*/
 
 /* Public functions ----------------------------------------------------------*/
+
+
+
+extern uint8_t TxBuffer[];
+extern uint8_t TxCounter;
+
+extern uint8_t RxBuffer[];
+extern uint8_t RxCounter;
+extern uint8_t rx_over_count;
+extern uint8_t rx_flag;
+
+
+
 
 /** @addtogroup TIM4_TimeBase
   * @{
@@ -327,6 +342,18 @@ INTERRUPT_HANDLER(TIM1_CAP_COM_IRQHandler, 12)
   /* In order to detect unexpected events during development,
      it is recommended to set a breakpoint on the following instruction.
   */
+   /* Write one byte to the transmit data register */
+  static uint8_t tx_count = 0;
+  if (TxCounter == 0)
+  {
+    UART1_ITConfig(UART1_IT_TXE, DISABLE);
+    tx_count = 0;
+  }
+  else 
+  {
+    UART1_SendData8(TxBuffer[tx_count ++]);
+    TxCounter --;
+  }
 }
 
 /**
@@ -339,6 +366,25 @@ INTERRUPT_HANDLER(TIM1_CAP_COM_IRQHandler, 12)
   /* In order to detect unexpected events during development,
      it is recommended to set a breakpoint on the following instruction.
   */
+  uint8_t temp;
+
+  /* Read one byte from the receive data register and send it back */
+  if (RxCounter<RX_BUFFER_SIZE)
+  {
+    rx_over_count = 0;
+    RxBuffer[RxCounter++] = UART1_ReceiveData8();
+  }
+  else 
+  {
+    temp = UART1_ReceiveData8();
+  }
+  
+  if (UART1_GetITStatus(UART1_IT_OR))
+  {
+    //__nop();
+  }
+  
+  
 }
 #endif /*STM8S105*/
 
